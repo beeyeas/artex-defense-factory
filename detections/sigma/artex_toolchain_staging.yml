@@ -1,0 +1,33 @@
+title: Autonomous Agent Staging via Curl/Wget Payload Downloads
+id: 4f8b2c1d-9e3a-4c1f-8b2d-1a2b3c4d5e6f
+status: experimental
+description: Detects suspicious download and execution of payloads (RATs/Web shells) via curl or wget following high-velocity enumeration, matching tactics used by Storm-3358 with ARTEX.
+author: Detection Engineering Team (Enhanced from Microsoft Threat Intel)
+date: 2026-11-14
+references:
+  - https://www.microsoft.com/en-us/security/blog/2026/11/06/artex-abuse-expands-as-cybercriminals-target-financial-sector/
+logsource:
+  product: windows/linux
+  service: process_creation
+detection:
+  selection_downloader:
+    CommandLine|contains:
+      - 'curl '
+      - 'wget '
+      - 'Invoke-WebRequest'
+  selection_target:
+    CommandLine|contains:
+      - '.sh'
+      - '.py'
+      - '/tmp/'
+      - 'vshell'
+      - 'wisp'
+      - 'adaptix'
+  condition: selection_downloader and selection_target
+falsepositives:
+  - Standard software package installation scripts executed by administrators.
+level: high
+tags:
+  - attack.execution
+  - attack.command_and_control
+  - attack.t1105

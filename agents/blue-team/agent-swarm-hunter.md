@@ -47,3 +47,8 @@ Output all triage assessments in the following strict JSON format:
   ]
 }
 ```
+## 6. Threat Actor TTP Additions (Storm-3358 / ARTEX Indicators)
+When investigating incidents, explicitly search for:
+- **RAT Staging Utilities:** Rapid invocation of `curl` or `wget` immediately following reconnaissance bursts to download remote access trojans (e.g., WISP, vshell, AdaptixC2).
+- **Web Shell Persistence:** Sudden creation of unauthorized script files (`.php`, `.jsp`, `.aspx`) in web application root directories accompanied by suspicious shell command executions.
+- **Decoy Engagement:** Track whether inbound agent traffic has interacted with deployed deception honeypots or tarpits; if an agent consumes a "fake win," immediately log its exploration graph footprint for attribution.
