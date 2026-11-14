@@ -1,0 +1,31 @@
+rule artex_machine_tempo_cloud_recon_burst {
+  meta:
+    author = "Detection Engineering Team"
+    description = "Detects machine-tempo cloud control plane enumeration characteristic of autonomous offensive agents (e.g., ARTEX worker swarms executing >20 distinct read/discovery APIs in <30s)."
+    severity = "HIGH"
+    mitre_attack_tactic = "Discovery"
+    mitre_attack_technique = "T1580"
+
+  events:
+    $api.metadata.vendor_name = "AMAZON"
+    $api.metadata.product_name = "AWS CloudTrail"
+    $api.metadata.event_type = "API_CALL"
+    // Target reconnaissance and privilege discovery APIs
+    $api.target.resource.attribute.labels["eventName"] = /^(List|Get|Describe|Lookup).*/
+    $api.principal.user.userid = $principal_id
+    $api.principal.ip = $src_ip
+    $api.target.resource.attribute.labels["eventName"] = $event_name
+
+  match:
+    $principal_id, $src_ip over 30s
+
+  outcome:
+    $risk_score = 85
+    $distinct_api_count = count_distinct($event_name)
+    $total_events = count($api.metadata.id)
+    $user_agents = array_distinct($api.network.http.user_agent)
+
+  condition:
+    // Autonomous worker loops enumerate distinct endpoints far faster than human operators
+    #event_name >= 20 and $total_events >= 25
+}

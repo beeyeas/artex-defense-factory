@@ -1,0 +1,28 @@
+title: High-Velocity Repository & Secret Enumeration via Personal Access Token
+id: 9b4e2f1a-7c3d-4e8b-a1f0-6d5c8e9b2a11
+status: experimental
+description: Detects rapid API-driven enumeration of private repositories, secrets, and organization workflows indicative of automated offensive frameworks (e.g., ARTEX) exploiting unrotated PATs.
+author: Detection Engineering Team
+date: 2026-11-14
+references:
+  - https://attack.mitre.org/techniques/T1552/001/
+logsource:
+  product: github
+  service: audit
+detection:
+  selection:
+    action:
+      - 'repo.access'
+      - 'git.clone'
+      - 'org.list_members'
+      - 'workflows.read'
+      - 'secrets.list'
+  timeframe: 1m
+  condition: selection | count(repository) by actor > 15
+falsepositives:
+  - Legitimate CI/CD backup runners or organization-wide static analysis scanners (allowlist known runner IPs).
+level: high
+tags:
+  - attack.credential_access
+  - attack.discovery
+  - attack.t1552.001
