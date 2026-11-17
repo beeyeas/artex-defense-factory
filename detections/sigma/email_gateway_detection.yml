@@ -1,0 +1,27 @@
+title: M365 Outage Lure Phishing Campaign (Nov 2026)
+id: 8f4e2a1b-9c3d-4e7a-b123-5d6e7f8a9b0c
+status: experimental
+description: Detects high-volume phishing emails masquerading as Microsoft 365 outage notifications with randomized 6-character subject tokens and specific sender clusters.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2026/11/16/high-volume-phishing-campaign-uses-microsoft-365-outage-lures-target-multiple-industry-sectors-2/
+author: Threat Intelligence / SecOps
+date: 2026-11-16
+tags:
+    - attack.initial_access
+    - attack.t1566.002
+logsource:
+    category: email
+detection:
+    selection_sender:
+        sender.domain|endswith:
+            - 'moments-notice.com'
+            - 'planetmaison.com'
+            - 'newbooker.com'
+    selection_subject:
+        email.subject|re: '(?i)^(\[external\]\s*|\*external\*\s*)?outage\s*[-–—]\s*[a-z0-9]{6}$'
+    selection_display_name:
+        email.sender.display_name|re: '^[A-Z]{3}\s+(Outage Notification|Service Health)$'
+    condition: selection_sender or selection_subject or selection_display_name
+falsepositives:
+    - Legitimate automated outage alerts using identical 6-character alphanumeric suffixes (verify against known vendor domains).
+level: high
