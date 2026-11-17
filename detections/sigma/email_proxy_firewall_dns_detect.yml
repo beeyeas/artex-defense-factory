@@ -1,0 +1,24 @@
+title: M365 Outage Phishing Campaign C2/Redirect Infrastructure
+id: 3c7a9d2e-1b4f-4a8c-9e01-2b3c4d5e6f7a
+status: experimental
+description: Detects outbound web traffic or DNS queries to landing pages and click-tracking infrastructure associated with the November 2026 M365 outage phishing campaign.
+references:
+    - https://www.microsoft.com/en-us/security/blog/2026/11/16/high-volume-phishing-campaign-uses-microsoft-365-outage-lures-target-multiple-industry-sectors-2/
+author: Threat Intelligence / SecOps
+date: 2026-11-16
+tags:
+    - attack.initial_access
+    - attack.t1566.002
+logsource:
+    category: proxy
+detection:
+    selection_url:
+        c-uri|contains:
+            - 'reallifeaccounting.com'
+            - 'u113727626.ct.sendgrid.net/ls/click'
+            - 'url.newbooker.com/ls/click'
+            - '162.120.17.69:8080/t/v3.'
+    condition: selection_url
+falsepositives:
+    - Unlikely, unless the organization legitimately conducts business with reallifeaccounting[.]com.
+level: high
